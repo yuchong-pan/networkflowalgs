@@ -71,20 +71,26 @@
     $d(i) \leftarrow \infty$ for all $i \in V$ \\
     $p(i) \leftarrow \textbf{null}$ for all $i \in V$ \\
     $d(s) \leftarrow 0$ \\
-    $q.\textit{push($s$)}$ \\
+    $q.\textit{add($s$)}$ \\
     \While{not $q.\textit{empty?}$}{
-      $i \leftarrow q.\textit{front()}$ \\
+      $i \leftarrow q.\textit{remove()}$ \\
       \For{$j \in V$ such that $(i, j) \in A$}{
         \If{$d(j) > d(i) + 1$}{
           $d(j) \leftarrow d(i) + 1$ \\
           $p(j) \leftarrow i$ \\
-          $q.\textit{push(j)}$
+          $q.\textit{add($j$)}$
         }
       }
     }
     \caption{Adapted Dijkstra's algorithm where $c(i, j) = 1$ for all $(i, j) \in A$.}
     \label{alg:adapted-dijkstra}
   \end{algorithm}
+\end{exercise}
+
+\begin{exercise}
+  ($\Longrightarrow$) Suppose for the sake of contradiction that there exists a negative-cost cycle $C$ reachable from $s$. Let $v \in V(C)$. Let $\mathcal P$ be the set of $s$-$v$ paths. Let $P_0 \in \mathcal P$. Let $P'$ be a $v$-$v$ path along $C$. Then $P_0$ appended by any copy of $P'$ is an $s$-$v$ path. Since $c(P') := \sum_{e \in E(P')} c(e) < 0$, then $\{ c(P) := \sum_{e \in E(P)} c(e) : P \in \mathcal P \}$ is not bounded below. Hence, there are no simple shortest $s$-$v$ paths.
+
+  ($\Longleftarrow$) Suppose that there are no negative-cost cycles reachable from $s$. Let $i \in V$. Let $\mathcal P$ be the set of simple $s$-$i$ paths. Since a simple $s$-$i$ path consists of at most $n$ distinct vertices, then $|P| \leq n! < \infty$. Let $P^* = \argmin_{P \in \mathcal P} c(P) := \argmin_{P \in \mathcal P} \sum_{e \in E(P)} c(e)$. Let $P$ be a non-simple $s$-$i$ path. Then $P$ contains a cycle $C$. Since there are no negative-cost cycles reachable from $s$, then $c(C) := \sum_{e \in E(C)} c(e) \geq 0$. This implies that removing all occurrences of $C$ from $P$ yields a simple $s$-$i$ path $P'$ with $c(P) \geq c(P') \geq \min \{ c(P) : P \in \mathcal P \} = c(P^*)$. Hence, $c(P^*) \leq c(P)$ for any $s$-$i$ path $P$, regardless of whether $P$ is simple or not. This shows that $P^*$ is the shortest $s$-$i$ path, and $P^*$ is simple.
 \end{exercise}
 
 \end{document}
