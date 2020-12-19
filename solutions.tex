@@ -1,0 +1,90 @@
+
+\documentclass[letterpaper,reqno,12pt]{article}
+\usepackage[margin=1.0in]{geometry}
+\usepackage{color,latexsym,amsmath,amssymb}
+\usepackage{fancyhdr}
+\usepackage{amsthm}
+\usepackage[linesnumbered,lined,boxed,commentsnumbered,noend,noline]{algorithm2e}
+\usepackage{dsfont}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{lmodern}
+\usepackage[numbers]{natbib}
+\usepackage{listings}% http://ctan.org/pkg/listings
+\lstset{
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  mathescape
+}
+
+\setlength{\AlCapSkip}{0.5em}
+
+\allowdisplaybreaks
+
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\mynote}[3][red]
+  {{\color{#1} \fbox{\bfseries\sffamily\scriptsize#2}
+  {\small$\blacktriangleright$\textsf{\emph{#3}}$\blacktriangleleft$}}~}
+\newcommand{\yp}[1]{\mynote{YP}{#1}}
+\DeclareMathOperator{\conv}{conv}
+\DeclareMathOperator{\charcone}{char.cone}
+\DeclareMathOperator{\STAB}{STAB}
+\DeclareMathOperator{\Down}{Down}
+\DeclareMathOperator{\lca}{lca}
+\DeclareMathOperator{\LPO}{LPO}
+\DeclareMathOperator{\OPT}{OPT}
+\DeclareMathOperator{\LHS}{LHS}
+\DeclareMathOperator{\RHS}{RHS}
+\DeclareMathOperator{\tr}{tr}
+\DeclareMathOperator{\vol}{vol}
+\DeclareMathOperator{\argmin}{arg\,min}
+\DeclareMathOperator{\argmax}{arg\,max}
+\DeclareMathOperator{\poly}{poly}
+\begin{document}
+\pagenumbering{arabic}
+\title{Network Flow Algorithms: Exercise Solutions}
+\author{Yuchong Pan}
+\date{\today}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{claim}{Claim}
+\theoremstyle{definition} \newtheorem{exercise}{Exercise} [section]
+\theoremstyle{definition} \newtheorem{defn}{Definition}
+\maketitle
+%
+
+\section{Preliminaries: Shortest Path Algorithms}
+
+\begin{exercise}
+  Let $i_k$ be the vertex selected at the $k^\text{th}$ iteration of Dijkstra's algorithm. We prove by induction that at the beginning of the $k^\text{th}$ iteration, $d(v) \in \{ d(i_k), d(i_k) + 1, \infty \}$ for all $v \in V$ not marked yet. At the beginning of the first iteration, $s$ is selected, and any $v \in V$ has $d(v) = \infty$; this proves the base case.
+  
+  Suppose that at the beginning of the $k^\text{th}$ iteration, $d(v) \in \{ d(i_k), d(i_k) + 1, \infty \}$ for all $v \in V$ not marked yet. Let $(i_k, j) \in A$ such that $j$ is not marked yet. If $d(i_k) + c(i_k, j) = d(i_k) + 1 < d(j)$, then we set $d(j) \leftarrow d(i_k) + 1$; otherwise, $d(j)$ remains the same, and hence $d(j) \in \{ d(i_k), d(i_k) + 1, \infty \}$. If $d(i_{k + 1}) = d(i_k)$, then we are done; otherwise, $d(i_{k + 1}) = d(i_k) + 1$, and $d(v) \in \{ d(i_k) + 1, \infty \} = \{ d(i_{k + 1}), \infty \}$ for all $v \in V$ not marked yet. This completes the induction step.
+
+  Now, consider the $k^\text{th}$ iteration. If $d(i_k) + c(i_k, j) = d(i_k) + 1 < d(j)$ for some $(i, j) \in A$, then $d(j)$ sas $\infty$, and we set $d(j) \leftarrow d(i_k) + 1$. Since $d(v) \in \{ d(i_k), d(i_k) + 1, \infty \}$ for all $v \in V$ not marked yet, then we can process $j$ after any $v \in V$ not marked yet such that $d(v) < \infty$ is processed. Therefore, we can maintain a queue of all $v \in V$ not marked yet such that $d(v) < \infty$, and we push $j$ to the tail of the queue if $d(j)$ is updated. The adapted algorithm is given in Algorithm \ref{alg:adapted-dijkstra}. It is clear that Algorithm \ref{alg:adapted-dijkstra} runs in $O(m)$ time.
+
+  \begin{algorithm}
+    $q \leftarrow \textit{new queue()}$ \\
+    $d(i) \leftarrow \infty$ for all $i \in V$ \\
+    $p(i) \leftarrow \textbf{null}$ for all $i \in V$ \\
+    $d(s) \leftarrow 0$ \\
+    $q.\textit{push($s$)}$ \\
+    \While{not $q.\textit{empty?}$}{
+      $i \leftarrow q.\textit{front()}$ \\
+      \For{$j \in V$ such that $(i, j) \in A$}{
+        \If{$d(j) > d(i) + 1$}{
+          $d(j) \leftarrow d(i) + 1$ \\
+          $p(j) \leftarrow i$ \\
+          $q.\textit{push(j)}$
+        }
+      }
+    }
+    \caption{Adapted Dijkstra's algorithm where $c(i, j) = 1$ for all $(i, j) \in A$.}
+    \label{alg:adapted-dijkstra}
+  \end{algorithm}
+\end{exercise}
+
+\end{document}
