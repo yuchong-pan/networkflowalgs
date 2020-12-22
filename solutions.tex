@@ -181,9 +181,11 @@
     }
     $\mu \leftarrow \infty$ \\
     \For{$j \in V$}{
+      $\nu \leftarrow -\infty$ \\
       \For{$k \leftarrow 0, \ldots, n - 1$}{
-        $\mu \leftarrow \min(\mu, \frac{d_n(j) - d_k(j)}{n - j})$
+        $\nu \leftarrow \max(\nu, \frac{d_n(j) - d_k(j)}{n - j})$
       }
+      $\mu \leftarrow \min(\mu, \nu)$
     }
     \caption{An algorithm for computing the cost of the minimum mean-cost cycle.}
     \label{alg:min-mean-cost-cycle-value}
@@ -215,12 +217,14 @@
     }
     $\mu \leftarrow \infty$ \\
     \For{$j \in V$}{
+      $\nu \leftarrow -\infty$ \\
       \For{$k \leftarrow 0, \ldots, n - 1$}{
-        \If{$\frac{d_n(j) - d_k(j)}{n - j} < \mu$}{
-          $\mu \leftarrow \frac{d_n(j) - d_k(j)}{n - j}$ \\
-          $j^* \leftarrow j$ \\
-          $k^* \leftarrow k$
-        }
+        $\nu \leftarrow \max(\nu, \frac{d_n(j) - d_k(j)}{n - j})$
+      }
+      \If{$\nu < \mu$}
+      {
+        $\mu \leftarrow \nu$ \\
+        $j^* \leftarrow j$
       }
     }
     $P = \{ (v_1, v_2), \ldots, (v_{n - 1}, v_n) \} \leftarrow \text{path formed by following $p_n$ from $j^*$ backwards}$ \\
