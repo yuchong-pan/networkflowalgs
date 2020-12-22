@@ -220,4 +220,55 @@
   \end{algorithm}
 \end{exercise}
 
+\begin{exercise}
+  \begin{enumerate}
+    \item[(a)] We give Algorithm \ref{alg:min-cost-time-ratio-cycle}. Let $k$ be the number of iterations in the binary search of Algorithm \ref{alg:min-cost-time-ratio-cycle}. Then $k$ is the minimum positive integer such that $\frac{(nC + 1) - (-nC)}{2^k} < \frac{1}{(nT)^2}$, i.e.\ $2^k > (2nC + 1)(nT)^2$. Hence, we have that
+    \begin{align*}
+      k &= \left\lceil \log_2 \left((2nC + 1)(nT)^2\right) \right\rceil + 1 = O\left(\log \left(nC (nT)^2\right)\right) = O\left(\log \left(n^3 CT^2\right)\right) \\
+      &= O(3\log n + \log C + 2\log T) = O(\log n + \log C + \log T) = O(\log (nCT)).
+    \end{align*}
+    In each iteration, we invoke the negative-cost cycle detection algorithm, whose running time is $O(nm)$. Hence, the total running time of Algorithm \ref{alg:min-cost-time-ratio-cycle} is $O(nm\log(nCT))$.
+
+    \begin{algorithm}
+      $\ell \leftarrow -nC$ \\
+      $u \leftarrow nC + 1$ \\
+      \While{$u - \ell \geq \frac{1}{(nT)^2}$}{
+        $\mu \leftarrow \frac{\ell + u}{2}$ \\
+        Check whether $G$ has negative-cost cycles with edge costs $c - \mu t$ \\
+        \If{there exists a negative-cost cycle of $G$ with edge costs $c - \mu t$}{
+          $u \leftarrow \mu$
+        }
+        \Else{
+          $l \leftarrow \mu$
+        }
+      }
+      Find a negative-cost cycle $\Gamma^*$ of $G$ with edge costs $c - ut$ \\
+      \Return{$\Gamma^*$}
+      \caption{An algorithm for finding a cycle that minimizes $\min_\text{cycle $\Gamma$ of $G$} \frac{c(\Gamma)}{t(\Gamma)}$.}
+      \label{alg:min-cost-time-ratio-cycle}
+    \end{algorithm}
+
+    Let
+    $$ \mu^* = \min_\text{cycle $\Gamma$ of $G$} \frac{c(\Gamma)}{t(\Gamma)}. $$
+    We will show that $\ell \leq \mu^* < u$ by induction on the iterations of the binary search. Let $\Gamma$ be a cycle of $G$. Then $|\Gamma| \leq n$. Since $t(\Gamma_j) = \sum_{e \in E(\Gamma_j)} t(e) \in \NN$, then we have that
+    $$ \left|\frac{c(\Gamma)}{t(\Gamma)}\right| = \frac{|c(\Gamma)|}{t(\Gamma)} \leq \frac{\left|\sum_{e \in E(\Gamma)} c(e)\right|}{1} \leq \sum_{e \in E(\Gamma)} |c(e)| \leq \sum_{e \in E(\Gamma)} C = |\Gamma| C \leq nC. $$
+    This shows that $-nC \leq \mu^* \leq nC < nC + 1$, proving the base case. Let $\ell_0, u_0$ be the values of $\ell, u$ in some iteration. Let $\ell', u'$ be the values of $\ell, u$ in the next iteration. If $G$ has a negative-cost cycle $\Gamma$ with edge costs $c - \mu t$, then $c(\Gamma) - \mu t(\Gamma) < 0$ and hence $\frac{c(\Gamma)}{t(\Gamma)} < \mu$; this implies that $\mu^* < \mu$. Otherwise, $c(\Gamma) - \mu t(\Gamma) \geq 0$ and hence $\frac{c(\Gamma)}{t(\Gamma)} \geq \mu$ for any cycle $\Gamma$ of $G$; this implies that $\mu^* \geq \mu$. This completes the induction step.
+
+    Let $\ell^*, u^*$ be the final values of $\ell, u$. We will show that the cycle $\Gamma^*$ returned by Algorithm \ref{alg:min-cost-time-ratio-cycle} satisfies $\frac{c(\Gamma^*)}{t(\Gamma^*)} = \mu^*$. Note that
+    $$ \frac{c\left(\Gamma^*\right)}{t\left(\Gamma^*\right)} \geq \min_\text{cycle $\Gamma$ of $G$} \frac{c(\Gamma)}{t(\Gamma)} = \mu^*. $$
+    Suppose for the sake of contradiction that $\frac{c(\Gamma^*)}{t(\Gamma^*)} > \mu^*$. Then $c(\Gamma^*) > \mu^* t(\Gamma^*)$.
+    By Algorithm \ref{alg:min-cost-time-ratio-cycle}, $c(\Gamma^*) - u^* t(\Gamma^*) < 0$, and hence $c(\Gamma^*) < u^* t(\Gamma)$. Combining these two inequalities gives that $\mu^* t(\Gamma^*) < c(\Gamma^*) < u^* t(\Gamma^*)$. Hence, we have that $\mu^* < \frac{c(\Gamma^*)}{t(\Gamma^*)} < u^*$. This implies that
+    \begin{equation} \label{eq:cost-time-ratio-difference}
+      \frac{c(\Gamma^*)}{t(\Gamma^*)} - \mu^* < u^* - \mu^* \leq u^* - \ell^* < \frac{1}{(nT)^2}.
+    \end{equation}
+    Let
+    $$ \Gamma' = \argmin_\text{cycle $\Gamma$ of $G$} \frac{c(\Gamma)}{t(\Gamma)}. $$
+    For any cycle $\Gamma$ of $G$, we have that
+    $$ t(\Gamma) = \sum_{e \in E(\Gamma)} t(e) \leq \sum_{e \in E(\Gamma)} T = |\Gamma| T \leq nT. $$
+    Since $\frac{c(\Gamma^*)}{t(\Gamma^*)} > \mu^*$ and since $c(i, j), t(i, j) \in \ZZ$, then we have that
+    $$ \frac{c\left(\Gamma^*\right)}{t\left(\Gamma^*\right)} - \mu^* = \frac{c\left(\Gamma^*\right)}{t\left(\Gamma^*\right)} - \frac{c\left(\Gamma'\right)}{t\left(\Gamma'\right)} = \frac{c\left(\Gamma^*\right) t\left(\Gamma'\right) - c\left(\Gamma'\right) t\left(\Gamma^*\right)}{t\left(\Gamma^*\right) t\left(\Gamma'\right)} \geq \frac{1}{t\left(\Gamma^*\right) t\left(\Gamma'\right)} \geq \frac{1}{(nT)^2}. $$
+    This contradicts \eqref{eq:cost-time-ratio-difference}. Hence, $\frac{c(\Gamma^*)}{t(\Gamma^*)} = \mu^*$. The proof is complete.
+  \end{enumerate}
+\end{exercise}
+
 \end{document}
